@@ -40,7 +40,6 @@ sensor:
   - platform: rest
     resource: http://YOUR_SERVER_IP:YOUR_PORT/raid_status
     name: Raid Status
-    value_template: 'OK'
     json_attributes:
       - resync_status
       - state
