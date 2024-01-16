@@ -46,8 +46,8 @@ You can set up a Home Assistant RESTful sensor to interact with the Raid Status 
 ```yaml
 sensor:
   - platform: rest
-    name: 'RAID Status: MD0'
-    resource: http://IP_ADRESS:PORT/raid_status/md0
+    resource: http://IP_ADDRESS:PORT/raid_status/VOLUME_NAME
+    name: RAID Status
     value_template: '{{ value_json.state }}'
     json_attributes:
       - resync_status
@@ -55,4 +55,5 @@ sensor:
       - working_disks
       - failed_disks
       - spare_disks
+      - free_space
 ```
