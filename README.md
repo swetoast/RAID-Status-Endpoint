@@ -38,7 +38,7 @@ You can set up a Home Assistant RESTful sensor to interact with the Raid Status 
 ```yaml
 sensor:
   - platform: rest
-    resource: http://YOUR_SERVER_IP:YOUR_PORT/raid_status
+    resource: http://IP_ADRESS:PORT/raid_status
     name: Raid Status
     json_attributes:
       - resync_status
@@ -47,4 +47,55 @@ sensor:
       - working_disks
       - failed_disks
       - spare_disks
+```
+or if you have more then one raid configuration in your system
+
+```yaml
+sensor:
+  - platform: rest
+    name: RAID Status
+    resource: http://IP_ADRESS:PORT/raid_status
+    json_attributes:
+      - md0
+      - md1
+      - md2
+  - platform: template
+    sensors:
+      raid_md0_state:
+        value_template: '{{ states.sensor.raid_status.attributes["md0"]["state"] }}'
+      raid_md0_active_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md0"]["active_disks"] }}'
+      raid_md0_failed_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md0"]["failed_disks"] }}'
+      raid_md0_resync_status:
+        value_template: '{{ states.sensor.raid_status.attributes["md0"]["resync_status"] }}'
+      raid_md0_spare_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md0"]["spare_disks"] }}'
+      raid_md0_working_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md0"]["working_disks"] }}'
+      raid_md1_state:
+        value_template: '{{ states.sensor.raid_status.attributes["md1"]["state"] }}'
+      raid_md1_active_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md1"]["active_disks"] }}'
+      raid_md1_failed_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md1"]["failed_disks"] }}'
+      raid_md1_resync_status:
+        value_template: '{{ states.sensor.raid_status.attributes["md1"]["resync_status"] }}'
+      raid_md1_spare_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md1"]["spare_disks"] }}'
+      raid_md1_working_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md1"]["working_disks"] }}'
+      raid_md2_state:
+        value_template: '{{ states.sensor.raid_status.attributes["md2"]["state"] }}'
+      raid_md2_active_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md2"]["active_disks"] }}'
+      raid_md2_failed_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md2"]["failed_disks"] }}'
+      raid_md2_resync_status:
+        value_template: '{{ states.sensor.raid_status.attributes["md2"]["resync_status"] }}'
+      raid_md2_spare_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md2"]["spare_disks"] }}'
+      raid_md2_working_disks:
+        value_template: '{{ states.sensor.raid_status.attributes["md2"]["working_disks"] }}'
+
 ```
