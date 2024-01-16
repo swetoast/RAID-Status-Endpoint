@@ -32,10 +32,19 @@ def get_raid_detail(volume):
     except Exception as e:
         return {'error': str(e)}
 
+def get_free_space(volume):
+    try:
+        output = os.popen(f'df /dev/{volume}').readlines()[-1]
+        _, total, used, free, percent, _ = output.split()
+        return percent.rstrip('%')
+    except Exception as e:
+        return {'error': str(e)}
+
 @app.route('/raid_status/<volume>')
 def raid_status(volume):
     if os.path.exists(f'/dev/{volume}'):
         status = get_raid_detail(volume)
+        status['free_space'] = get_free_space(volume)
     else:
         status = {'error': 'Volume not found'}
     return jsonify(status)
