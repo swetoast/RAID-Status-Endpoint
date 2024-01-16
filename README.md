@@ -27,6 +27,14 @@ This configuration is read from a file named raid_endpoint.conf. The configurati
     CERTIFICATE_PATH: The path to the SSL certificate file (used if USE_HTTPS is True).
     KEY_PATH: The path to the SSL key file (used if USE_HTTPS is True).
 
+
+[DEFAULT]
+HOST = 127.0.0.1
+PORT = 5001
+USE_HTTPS = false
+CERTIFICATE_PATH = /path/to/cert.crt
+KEY_PATH = /path/to/key.key
+
 ## Note
 
 This application uses the `mdadm` command to fetch RAID details, so it must be run on a system that has `mdadm` installed and RAID volumes configured.
