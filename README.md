@@ -46,7 +46,7 @@ You can set up a Home Assistant RESTful sensor to interact with the Raid Status 
 ```yaml
 sensor:
   - platform: rest
-    name: MD0 RAID Status
+    name: 'RAID Status: MD0'
     resource: http://IP_ADRESS:PORT/raid_status/md0
     value_template: '{{ value_json.state }}'
     json_attributes:
