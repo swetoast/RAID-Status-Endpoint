@@ -4,17 +4,23 @@ This is a Flask application that provides an API endpoint to get the status of R
 
 ## Features
 
-- Sanitizes input to ensure only valid volume names are processed.
-- Retrieves RAID detail including resync status, state, active disks, working disks, failed disks, and spare disks.
-- Retrieves free space of the volume.
-- Provides a route `/raid_status/<volume>` to get the status of a RAID volume.
+- **Input Sanitization**: Ensures only valid volume names are processed.
+- **RAID Detail Retrieval**: Retrieves RAID details including resync status, state, active disks, working disks, failed disks, and spare disks.
+- **Free Space Retrieval**: Retrieves the free space of the volume.
+- **API Endpoint**: Provides a route `/raid_status/<volume>` to get the status of a RAID volume.
 
-## How to Run
+## Installation
 
 1. Clone this repository.
 2. Install the required Python packages: Flask, re, configparser, subprocess, traceback, os.
-3. Configure the application by modifying the `raid_endpoint.conf` file in the same directory as the script. The configuration includes the host, port, whether to use HTTPS, and paths to the certificate and key files if HTTPS is used.
-4. Run the script.
+
+## Configuration
+
+Configure the application by modifying the `raid_endpoint.conf` file in the same directory as the script. The configuration includes the host, port, whether to use HTTPS, and paths to the certificate and key files if HTTPS is used.
+
+## Usage
+
+Run the script to start the Flask application.
 
 ## API Endpoints
 
@@ -22,7 +28,7 @@ This is a Flask application that provides an API endpoint to get the status of R
 
 ## Home Assistant Integration
 
-You can use the Home Assistant REST sensor to get the RAID status. Here's an example configuration:
+This application can be integrated with Home Assistant using the REST sensor. Here's an example configuration:
 
 ```yaml
 sensor:
