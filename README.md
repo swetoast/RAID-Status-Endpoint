@@ -42,4 +42,4 @@ sensor:
       - working_disks
       - failed_disks
       - spare_disks
-      - free_space
+      - used_space
