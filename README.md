@@ -1,4 +1,4 @@
-# RAID Status Flask Application
+# RAID Status Endpoint
 
 This is a Flask application that provides an API endpoint to get the status of RAID volumes.
 
