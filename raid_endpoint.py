@@ -54,7 +54,7 @@ def get_free_space(volume):
 def raid_status(volume):
     try:
         status = get_raid_detail(volume)
-        status['free_space'] = get_free_space(volume)
+        status['used_space'] = get_free_space(volume)
     except FileNotFoundError:
         status = {'error': 'Volume not found'}
     return jsonify(status)
