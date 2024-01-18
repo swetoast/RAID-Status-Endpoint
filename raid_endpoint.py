@@ -4,11 +4,18 @@ import configparser
 import subprocess
 import traceback
 import os
+import sys
+import logging
 
 app = Flask(__name__)
 
+from logging.handlers import RotatingFileHandler
+
+handler = RotatingFileHandler('raid_endpoint.log', maxBytes=10*1024*1024, backupCount=1)
+logging.basicConfig(handlers=[handler], level=logging.INFO)
+
 def sanitize_input(volume):
-    if not re.match(r'^md\d+$', volume):
+    if not re.match(r'^md[0-9]+$', volume):
         return False
     return True
 
@@ -17,7 +24,7 @@ def get_raid_detail(volume):
         return {'error': 'Invalid volume name'}
 
     try:
-        output = subprocess.run(['mdadm', '--detail', f'/dev/{volume}'], capture_output=True, text=True).stdout
+        output = subprocess.run(['mdadm', '--detail', '/dev/md{}'.format(volume)], capture_output=True, text=True).stdout
         match = re.search(r'Resync Status: (\d+)%', output)
         resync_status = int(match.group(1)) if match else 100
 
@@ -37,18 +44,20 @@ def get_raid_detail(volume):
             'spare_disks': spare_disks
         }
     except (subprocess.CalledProcessError, re.error) as e:
-        return {'error': str(e)}
+        logging.error(traceback.format_exc())
+        return {'error': 'An error occurred'}
 
 def get_free_space(volume):
     if not sanitize_input(volume):
         return {'error': 'Invalid volume name'}
 
     try:
-        output = subprocess.run(['df', f'/dev/{volume}'], capture_output=True, text=True).stdout.splitlines()[-1]
+        output = subprocess.run(['df', '/dev/md{}'.format(volume)], capture_output=True, text=True).stdout.splitlines()[-1]
         _, total, used, free, percent, _ = output.split()
         return percent.rstrip('%')
     except (subprocess.CalledProcessError, re.error) as e:
-        return {'error': str(e)}
+        logging.error(traceback.format_exc())
+        return {'error': 'An error occurred'}
 
 @app.route('/raid_status/<volume>')
 def raid_status(volume):
@@ -56,13 +65,14 @@ def raid_status(volume):
         status = get_raid_detail(volume)
         status['free_space'] = get_free_space(volume)
     except FileNotFoundError:
+        logging.error(traceback.format_exc())
         status = {'error': 'Volume not found'}
     return jsonify(status)
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    config_path = os.path.join(dir_path, 'raid_endpoint.conf')
+    config_path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(dir_path, 'raid_endpoint.conf')
     config.read(config_path)
     host = config.get('DEFAULT', 'HOST')
     port = config.getint('DEFAULT', 'PORT')
