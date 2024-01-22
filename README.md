@@ -43,3 +43,7 @@ sensor:
       - failed_disks
       - spare_disks
       - used_space
+```
+## Support
+
+If you find these lists useful, please consider giving me a star on GitHub!
