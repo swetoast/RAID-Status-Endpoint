@@ -40,7 +40,6 @@ sensor:
       - active_disks
       - working_disks
       - failed_disks
-      - spare_disks
       - used_space
 ```
 ## Support
