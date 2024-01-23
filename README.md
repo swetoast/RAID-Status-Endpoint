@@ -42,3 +42,18 @@ sensor:
       - failed_disks
       - used_space
       - resync_speed
+```
+## Importing a Blueprint in Home Assistant
+
+Follow these steps to import a blueprint in Home Assistant:
+
+1. Navigate to `Configuration` → `Automations & Scenes` → `Blueprints`.
+2. Click on the `Import Blueprint` button located at the bottom right.
+3. A dialog will pop-up asking for the URL of the blueprint. Enter the URL of your blueprint. For example: `https://raw.githubusercontent.com/swetoast/RAID-Status-Endpoint/main/blueprint_raid_status.yaml`
+4. Click on `Preview Blueprint`. This will load the blueprint and show a preview in the import dialog.
+5. You can change the name of the blueprint if you wish, and then click `Import Blueprint`.
+
+The blueprint can now be used for creating automations. If the blueprint goes through revisions, you may need to re-import it to get the changes.
+
+Please note that these instructions are based on the Home Assistant user interface as of the time of writing and may vary with future updates.
+
