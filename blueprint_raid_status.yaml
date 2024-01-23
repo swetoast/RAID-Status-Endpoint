@@ -24,15 +24,19 @@ blueprint:
     priority:
       name: Notification Priority
       description: Priority of the notification.
-      default: low
+      default: 'low'
       selector:
-        text: {}
+        select:
+          options:
+            - 'low'
+            - 'high'
+            - 'max'
     color:
       name: Notification Color
       description: Color of the notification.
-      default: green
+      default: '#008000'
       selector:
-        text: {}
+        color: {}
     notification_icon:
       name: Notification Icon
       description: Icon of the notification.
@@ -54,9 +58,13 @@ blueprint:
     visibility:
       name: Notification Visibility
       description: Visibility of the notification.
-      default: public
+      default: 'private'
       selector:
-        text: {}
+        select:
+          options:
+            - 'private'
+            - 'public'
+            - 'secret'
     local_push:
       name: Local Push Notification
       description: Whether the notification is a local push notification.
@@ -83,12 +91,12 @@ blueprint:
       default: true
       selector:
         boolean: {}
-    notification_service:
-      name: Notification Service
-      description: Service to send the notification.
-      default: notify.mobile_app_your_device
-      selector:
-        text: {}
+notification_service:
+  name: Notification Service
+  description: Service to send the notification.
+  default: notify.mobile_app_your_device
+  selector:
+    text: {}
 
 trigger:
   platform: state
