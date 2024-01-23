@@ -4,7 +4,6 @@ This is a Flask application that provides an API endpoint to get the status of R
 
 ## Features
 
-- **Input Sanitization**: Ensures only valid volume names are processed.
 - **RAID Detail Retrieval**: Retrieves RAID details including resync status, state, active disks, working disks, failed disks, and spare disks.
 - **Free Space Retrieval**: Retrieves the free space of the volume.
 - **API Endpoint**: Provides a route `/raid_status/<volume>` to get the status of a RAID volume.
