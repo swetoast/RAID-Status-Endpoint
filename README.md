@@ -4,14 +4,13 @@ This is a Flask application that provides an API endpoint to get the status of R
 
 ## Features
 
-- **RAID Detail Retrieval**: Retrieves RAID details including resync status, state, active disks, working disks, failed disks, and spare disks.
-- **Free Space Retrieval**: Retrieves the free space of the volume.
-- **API Endpoint**: Provides a route `/raid_status/<volume>` to get the status of a RAID volume.
+- **RAID Detail Retrieval**: Retrieves RAID details including resync status, state, active disks, failed disks, used space, and resync speed.
+- **API Endpoint**: Provides routes `/raid_status/<volume>` and `/raid_status` to get the status of a specific RAID volume or all RAID volumes, respectively.
 
 ## Installation
 
 1. Clone this repository.
-2. Install the required Python packages: Flask, re, configparser, subprocess, traceback, os.
+2. Install the required Python packages: Flask, re, configparser, subprocess, os.
 
 ## Configuration
 
@@ -23,7 +22,8 @@ Run the script to start the Flask application.
 
 ## API Endpoints
 
-- `GET /raid_status/<volume>`: Returns a JSON object with the status of the specified RAID volume. The status includes resync status, state, active disks, working disks, failed disks, spare disks, and free space.
+- `GET /raid_status/<volume>`: Returns a JSON object with the status of the specified RAID volume. The status includes resync status, state, active disks, failed disks, used space, and resync speed.
+- `GET /raid_status`: Returns a JSON object with the status of all RAID volumes.
 
 ## Home Assistant Integration
 
@@ -42,7 +42,3 @@ sensor:
       - failed_disks
       - used_space
       - resync_speed
-```
-## Support
-
-If you find these lists useful, please consider giving me a star on GitHub!
