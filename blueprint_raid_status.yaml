@@ -1,0 +1,130 @@
+blueprint:
+  name: RAID Check Automation
+  description: Monitors RAID arrays and sends notifications about their status.
+  domain: automation
+  input:
+    time_after:
+      name: Time After
+      description: Start time for the automation.
+      default: "08:00:00"
+      selector:
+        time: {}
+    time_before:
+      name: Time Before
+      description: End time for the automation.
+      default: "22:00:00"
+      selector:
+        time: {}
+    raid_arrays:
+      name: RAID Arrays
+      description: List of RAID arrays to monitor.
+      default: ["md0", "md1"]
+      selector:
+        list:
+          entity:
+            domain: sensor
+    priority:
+      name: Notification Priority
+      description: Priority of the notification.
+      default: low
+      selector:
+        text: {}
+    color:
+      name: Notification Color
+      description: Color of the notification.
+      default: green
+      selector:
+        text: {}
+    notification_icon:
+      name: Notification Icon
+      description: Icon of the notification.
+      default: mdi:harddisk
+      selector:
+        text: {}
+    channel:
+      name: Notification Channel
+      description: Channel of the notification.
+      default: updates
+      selector:
+        text: {}
+    persistent:
+      name: Persistent Notification
+      description: Whether the notification is persistent.
+      default: false
+      selector:
+        boolean: {}
+    visibility:
+      name: Notification Visibility
+      description: Visibility of the notification.
+      default: public
+      selector:
+        text: {}
+    local_push:
+      name: Local Push Notification
+      description: Whether the notification is a local push notification.
+      default: true
+      selector:
+        boolean: {}
+    car_ui:
+      name: Car User Interface
+      description: Whether the notification is compatible with car user interfaces.
+      default: true
+      selector:
+        boolean: {}
+    timeout:
+      name: Notification Timeout
+      description: Timeout of the notification in seconds.
+      default: 60
+      selector:
+        number: {}
+    alert_once:
+      name: Alert Once
+      description: Whether the notification should only alert once.
+      default: true
+      selector:
+        boolean: {}
+    notification_service:
+      name: Notification Service
+      description: Service to send the notification.
+      default: notify.mobile_app_your_device
+      selector:
+        text: {}
+
+trigger:
+  platform: state
+  entity_id: !input 'raid_arrays'
+  attribute: resync_status
+  from: "0"
+
+condition:
+  - condition: time
+    after: !input 'time_after'
+    before: !input 'time_before'
+
+action:
+  - service: !input 'notification_service'
+    data:
+      message: >-
+        {% set drives = !input 'raid_arrays' %} {% for drive in drives %}  
+        {% set resync_status = state_attr('sensor.' + drive + '_raid_status', 'resync_status') %}
+        {% set active_disks = state_attr('sensor.' + drive + '_raid_status', 'active_disks') %}
+        {% set failed_disks = state_attr('sensor.' + drive + '_raid_status', 'failed_disks') %}
+        {% if resync_status is not none and resync_status | int > 0 %}     
+          Drive {{ drive }} is resyncing. Current resync status: {{ resync_status }}   
+        {% endif %}
+        {% if active_disks is not none and failed_disks is not none %}
+          Drive {{ drive }} has {{ active_disks }} active disks and {{ failed_disks }} failed disks.
+        {% endif %}
+        {% endfor %}
+      title: "Homeassistant: Raid Check"
+      data:
+        priority: !input 'priority'
+        color: !input 'color'
+        notification_icon: !input 'notification_icon'
+        channel: !input 'channel'
+        persistent: !input 'persistent'
+        visibility: !input 'visibility'
+        local_push: !input 'local_push'
+        car_ui: !input 'car_ui'
+        timeout: !input 'timeout'
+        alert_once: !input 'alert_once'
