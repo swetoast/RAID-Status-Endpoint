@@ -23,9 +23,13 @@ def parse_mdstat():
             }
             if 'active' in info:
                 data[device]['active_disks'] = len(re.findall(r'\[\d\]', info))
-            if '[U_]' in info:
-                data[device]['raid_status'] = 'unclean'
         elif device and line.strip():
+            raid_status = re.search(r'\[[U_]+\]', line)
+            if raid_status:
+                raid_status = raid_status.group(0)
+                data[device]['failed_disks'] = raid_status.count('_')
+                if '_' in raid_status:
+                    data[device]['raid_status'] = 'unclean'
             if 'blocks' in line:
                 df_output = subprocess.check_output(['df', '/dev/' + device]).decode('utf-8').split('\n')[1].split()
                 data[device]['used_space'] = round(int(df_output[2]) / int(df_output[1]) * 100, 2)
@@ -35,8 +39,6 @@ def parse_mdstat():
                 if speed:
                     data[device]['resync_speed'] = round(int(speed.group(0).split('=')[1].split('K')[0]) / 1024, 2)
                 data[device]['raid_status'] = 'checking'
-            if '[__]' in line:
-                data[device]['failed_disks'] = len(re.findall(r'\[__\]', line))
     return data
 
 @app.route('/raid_status/<string:volume_name>', methods=['GET'])
