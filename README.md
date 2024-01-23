@@ -34,13 +34,13 @@ sensor:
   - platform: rest
     resource: http://IP_ADDRESS:PORT/raid_status/VOLUME_NAME
     name: RAID Status
-    value_template: '{{ value_json.state }}'
+    value_template: '{{ value_json.raid_status }}'
     json_attributes:
       - resync_status
       - active_disks
-      - working_disks
       - failed_disks
       - used_space
+      - resync_speed
 ```
 ## Support
 
