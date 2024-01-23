@@ -18,7 +18,7 @@ blueprint:
     raid_arrays:
       name: RAID Arrays
       description: List of RAID arrays to monitor.
-      default: ["sensor.raid_status_md0", "sensor.raid_status_md1", "sensor.raid_status_md127"]
+      default: ["sensor.raid_status_md0", "sensor.raid_status_md1"]
       selector:
         text: {}
     priority:
@@ -34,9 +34,9 @@ blueprint:
     color:
       name: Notification Color
       description: Color of the notification.
-      default: '#008000'
+      default: green
       selector:
-        color: {}
+        text: {}
     notification_icon:
       name: Notification Icon
       description: Icon of the notification.
@@ -91,12 +91,12 @@ blueprint:
       default: true
       selector:
         boolean: {}
-notification_service:
-  name: Notification Service
-  description: Service to send the notification.
-  default: notify.mobile_app_your_device
-  selector:
-    text: {}
+    notification_service:
+      name: Notification Service
+      description: Service to send the notification.
+      default: notify.mobile_app_your_device
+      selector:
+        text: {}
 
 trigger:
   platform: state
