@@ -43,7 +43,10 @@ def parse_mdstat():
 def get_raid_info(volume_name):
     data = parse_mdstat()
     if volume_name in data:
-        return jsonify({volume_name: data[volume_name]})
+        return jsonify({
+            'state': data[volume_name]['raid_status'],
+            'attributes': data[volume_name]
+        })
     else:
         return jsonify({'error': 'RAID configuration not found'}), 404
 
