@@ -6,8 +6,14 @@ import os
 
 app = Flask(__name__)
 
+def get_mdstat():
+    return subprocess.check_output(['cat', '/proc/mdstat']).decode('utf-8').split('\n')
+
+def get_df_output(device):
+    return subprocess.check_output(['df', '/dev/' + device]).decode('utf-8').split('\n')[1].split()
+
 def parse_mdstat():
-    mdstat = subprocess.check_output(['cat', '/proc/mdstat']).decode('utf-8').split('\n')
+    mdstat = get_mdstat()
     data = {}
     device = None
     for line in mdstat:
@@ -24,22 +30,30 @@ def parse_mdstat():
             if 'active' in info:
                 data[device]['active_disks'] = len(re.findall(r'\[\d\]', info))
         elif device and line.strip():
-            raid_status = re.search(r'\[[U_]+\]', line)
-            if raid_status:
-                raid_status = raid_status.group(0)
-                data[device]['failed_disks'] = raid_status.count('_')
-                if '_' in raid_status:
-                    data[device]['raid_status'] = 'unclean'
-            if 'blocks' in line:
-                df_output = subprocess.check_output(['df', '/dev/' + device]).decode('utf-8').split('\n')[1].split()
-                data[device]['used_space'] = round(int(df_output[2]) / int(df_output[1]) * 100, 2)
-            if 'check =' in line:
-                data[device]['resync_status'] = float(re.search(r'\d+.\d+', line).group(0))
-                speed = re.search(r'speed=\d+K/sec', line)
-                if speed:
-                    data[device]['resync_speed'] = round(int(speed.group(0).split('=')[1].split('K')[0]) / 1024, 2)
-                data[device]['raid_status'] = 'checking'
+            update_device_data(device, line, data)
     return data
+
+def update_device_data(device, line, data):
+    raid_status = re.search(r'\[[U_]+\]', line)
+    if raid_status:
+        update_raid_status(device, raid_status.group(0), data)
+    if 'blocks' in line:
+        df_output = get_df_output(device)
+        data[device]['used_space'] = round(int(df_output[2]) / int(df_output[1]) * 100, 2)
+    if 'check =' in line:
+        update_resync_status(device, line, data)
+
+def update_raid_status(device, raid_status, data):
+    data[device]['failed_disks'] = raid_status.count('_')
+    if '_' in raid_status:
+        data[device]['raid_status'] = 'unclean'
+
+def update_resync_status(device, line, data):
+    data[device]['resync_status'] = float(re.search(r'\d+.\d+', line).group(0))
+    speed = re.search(r'speed=\d+K/sec', line)
+    if speed:
+        data[device]['resync_speed'] = round(int(speed.group(0).split('=')[1].split('K')[0]) / 1024, 2)
+    data[device]['raid_status'] = 'checking'
 
 @app.route('/raid_status/<string:volume_name>', methods=['GET'])
 def get_raid_info(volume_name):
@@ -57,11 +71,15 @@ def get_all_raids():
     data = parse_mdstat()
     return jsonify(data)
 
-if __name__ == '__main__':
+def read_config():
     config = configparser.ConfigParser()
     dir_path = os.path.dirname(os.path.realpath(__file__))
     config_path = os.path.join(dir_path, 'raid_endpoint.conf')
     config.read(config_path)
+    return config
+
+def run_app():
+    config = read_config()
     host = config.get('DEFAULT', 'HOST')
     port = config.getint('DEFAULT', 'PORT')
     use_https = config.getboolean('DEFAULT', 'USE_HTTPS')
@@ -75,3 +93,6 @@ if __name__ == '__main__':
             app.run(host=host, port=port)
     else:
         app.run(host=host, port=port)
+
+if __name__ == '__main__':
+    run_app()
